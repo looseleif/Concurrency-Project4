@@ -11,7 +11,7 @@ typedef struct linked_node {
 } node;
 
 //Initialize page table
-char* read_line(char *, int); 
+char* read_line(char *, int);
 void traversal(node *);
 void insert(node **, node *);
 node* create_node(int, char *);

@@ -1,3 +1,4 @@
+#define  _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,23 +11,88 @@ int seq_ctr = 0;
 //Read the file on a line by line basis
 char* read_line(char* fname, int line_no) 
 {
-	// TODO 
+	FILE * fp = fopen(fname, "r");
+	if (fp == NULL)
+	{
+		perror("fopen");
+		free(fname);
+		fclose(fp);
+		exit(EXIT_FAILURE);
+	}
+
+	fseek(fp, 0, SEEK_END);
+	long int endpos = ftell(fp);;
+	long int currentpos;
+	rewind(fp);
+
+	char * buf = NULL;
+	int i;
+	size_t length = 0;
+	//read every line BEFORE the line we want
+	for(i = 0; i <= line_no; i++)
+	{
+		currentpos = ftell(fp);
+		if(currentpos == endpos) //EOF
+		{
+			printf("EOF\n");
+			return ((char*)5);
+		}
+		if((getline(&buf, &length, fp)) == -1) //ERROR CHECKING
+		{
+			perror("read_line");
+			free(buf);
+			free(fname);
+			fclose(fp);
+			exit(EXIT_FAILURE);
+		}
+	}
+
+	fclose(fp);
+	return buf;
+
 } 
 
 //traverse the linked list
 void traversal(node *head)
 {
-	// TODO
+	node * temp = head;
+	while(temp != NULL)
+	{
+		printf("%i, %i, %s\n", temp->seq_no, temp->line_no, temp->content);
+		temp = temp->next;
+	}
+
 }
 
 // insert the node into the linked list
 void insert(node **phead, node *newnode)
 {
-	// TODO
+	//first node inserted
+	if(*phead == NULL)
+	{
+		*phead = newnode;
+	}
+	else
+	{
+		node * search = *phead;
+		while(newnode->line_no < search->line_no)
+		{
+			search = search->next;
+		}
+
+		node * temp = search->next;
+		search->next = newnode;
+		newnode->next = temp;
+	}
 }
 
 //create a new node structure
 node* create_node(int line_no, char *line)
-{
-	// TODO
+{ 
+	node * newnode = (node *) malloc(sizeof(node));
+	newnode->seq_no = seq_ctr++;
+	newnode->line_no = line_no;
+	newnode->content = line;
+	newnode->next = NULL;
+	return newnode;
 }
