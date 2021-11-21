@@ -47,8 +47,16 @@ char* read_line(char* fname, int line_no)
 		}
 	}
 
+	
+
+	char* filler = (char*) malloc(length - 1);
+
+	sscanf(buf, " %s\n", filler);
+
+	//printf("[%s]", filler);
+
 	fclose(fp);
-	return buf;
+	return filler;
 
 } 
 
@@ -75,14 +83,28 @@ void insert(node **phead, node *newnode)
 	else
 	{
 		node * search = *phead;
-		while(newnode->line_no < search->line_no)
+
+		while(search->next != NULL)
 		{
+
+			if ((search->line_no < newnode->line_no) && (search->next->line_no > newnode->line_no)) {
+
+				node* temp = search->next;
+				search->next = newnode;
+				newnode->next = temp;
+
+				return;
+
+			}
+
 			search = search->next;
+
 		}
 
-		node * temp = search->next;
 		search->next = newnode;
-		newnode->next = temp;
+
+		return;
+
 	}
 }
 

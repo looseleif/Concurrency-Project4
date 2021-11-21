@@ -16,22 +16,32 @@ pthread_mutex_t seq_lock = PTHREAD_MUTEX_INITIALIZER;
 //start of the threads
 void* process_file(void *param)
 {
+
+	pthread_mutex_lock(&seq_lock);
+
 	char * filename = (char *) param;
-	//seq_lock for create_node
-	//list_lock for insert
-	//line_lock for accessing line_ctr
 
-	//read_line
-	//create_node
-	//insert
-	//pthread_mutex_lock(line_lock);
-	//pthread_mutex_unlock(seq_lock);
-	int temp_line_num = line_ctr;
+	char* lineOfInterest = read_line(filename, line_ctr);
 
-	printf("%s \n", read_line(filename, 0));
+	if()
 
+	node* threadNode = create_node(line_ctr, lineOfInterest);
+		
+	line_ctr++;
 
-	//fclose(fp);
+	if (line_ctr == 0) {
+
+		insert(NULL, threadNode);
+
+	}
+	else {
+
+		insert(&head, threadNode);
+
+	}
+
+	pthread_mutex_unlock(&seq_lock);
+
 }
 
 int main(int argc, char* argv[])
@@ -66,6 +76,8 @@ int main(int argc, char* argv[])
 	{
 		pthread_join(threadArray[i], NULL);
 	}
+
+	traversal(head);
 
 	free(filename);
 	return 0;
