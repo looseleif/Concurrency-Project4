@@ -7,6 +7,8 @@
 //global line-number counter to be sync'ed.
 int line_ctr = 0;
 
+int checkEnd = 0;
+
 //initialization of mutex locks
 pthread_mutex_t line_lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t list_lock = PTHREAD_MUTEX_INITIALIZER;
@@ -17,30 +19,63 @@ pthread_mutex_t seq_lock = PTHREAD_MUTEX_INITIALIZER;
 void* process_file(void *param)
 {
 
-	pthread_mutex_lock(&seq_lock);
+	char* lineOfInterest;
 
-	char * filename = (char *) param;
+	int local_lc = 0;
 
-	char* lineOfInterest = read_line(filename, line_ctr);
+	while (1) {
 
-	if()
+		pthread_mutex_lock(&line_lock);
 
-	node* threadNode = create_node(line_ctr, lineOfInterest);
+		local_lc = line_ctr;
+		line_ctr = line_ctr + 1;
+
+		pthread_mutex_unlock(&line_lock);
+
+		pthread_mutex_lock(&seq_lock);
+
+		char* filename = (char*)param;
+
+		lineOfInterest = read_line(filename, local_lc);
+
+		pthread_mutex_unlock(&seq_lock);
+
+		printf("%s\n", lineOfInterest);
+
 		
-	line_ctr++;
+		if (lineOfInterest == (char*)5) {
 
-	if (line_ctr == 0) {
+			printf("hasld");
 
-		insert(NULL, threadNode);
+			return 0;
 
-	}
-	else {
+		}
+		
+		pthread_mutex_lock(&line_lock);
+
+		node* threadNode = create_node(local_lc, lineOfInterest);
+
+		pthread_mutex_unlock(&seq_lock);
+
+
+		pthread_mutex_lock(&list_lock);
+
+		//if (local_lc == 0) {
+
+		//	insert(NULL, threadNode);
+
+		//}
+		//else {
 
 		insert(&head, threadNode);
 
+		//}
+
+		pthread_mutex_unlock(&list_lock);
+
 	}
 
-	pthread_mutex_unlock(&seq_lock);
+	return 0;
 
 }
 

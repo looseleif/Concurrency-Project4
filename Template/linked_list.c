@@ -47,13 +47,9 @@ char* read_line(char* fname, int line_no)
 		}
 	}
 
-	
-
 	char* filler = (char*) malloc(length - 1);
 
 	sscanf(buf, " %s\n", filler);
-
-	//printf("[%s]", filler);
 
 	fclose(fp);
 	return filler;
