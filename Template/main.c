@@ -28,48 +28,28 @@ void* process_file(void *param)
 		pthread_mutex_lock(&line_lock);
 
 		local_lc = line_ctr;
+
 		line_ctr = line_ctr + 1;
 
 		pthread_mutex_unlock(&line_lock);
-
-		pthread_mutex_lock(&seq_lock);
 
 		char* filename = (char*)param;
 
 		lineOfInterest = read_line(filename, local_lc);
 
-		pthread_mutex_unlock(&seq_lock);
-
-		printf("%s\n", lineOfInterest);
-
-		
 		if (lineOfInterest == (char*)5) {
 
-			printf("hasld");
+			free(lineOfInterest);
 
 			return 0;
 
 		}
-		
-		pthread_mutex_lock(&line_lock);
-
-		node* threadNode = create_node(local_lc, lineOfInterest);
-
-		pthread_mutex_unlock(&seq_lock);
-
 
 		pthread_mutex_lock(&list_lock);
 
-		//if (local_lc == 0) {
-
-		//	insert(NULL, threadNode);
-
-		//}
-		//else {
+		node* threadNode = create_node(local_lc, lineOfInterest);
 
 		insert(&head, threadNode);
-
-		//}
 
 		pthread_mutex_unlock(&list_lock);
 
@@ -113,6 +93,23 @@ int main(int argc, char* argv[])
 	}
 
 	traversal(head);
+
+	if (head != NULL) {
+
+		node* clearNode;
+
+		while (head != NULL) {
+
+			clearNode = head;
+			head = head->next;
+			free(clearNode->content);
+			free(clearNode);
+
+		}
+
+	}
+
+	printf("\n");
 
 	free(filename);
 	return 0;

@@ -25,7 +25,7 @@ char* read_line(char* fname, int line_no)
 	long int currentpos;
 	rewind(fp);
 
-	char * buf = NULL;
+	char * buf = (char*) malloc(256);
 	int i;
 	size_t length = 0;
 	//read every line BEFORE the line we want
@@ -34,10 +34,10 @@ char* read_line(char* fname, int line_no)
 		currentpos = ftell(fp);
 		if(currentpos == endpos) //EOF
 		{
-			printf("EOF\n");
+			free(buf);
 			return ((char*)5);
 		}
-		if((getline(&buf, &length, fp)) == -1) //ERROR CHECKING
+		if((fgets(buf, LINE_SIZE, fp)) == NULL) //ERROR CHECKING
 		{
 			perror("read_line");
 			free(buf);
@@ -47,12 +47,8 @@ char* read_line(char* fname, int line_no)
 		}
 	}
 
-	char* filler = (char*) malloc(length - 1);
-
-	sscanf(buf, " %s\n", filler);
-
 	fclose(fp);
-	return filler;
+	return buf;
 
 } 
 
@@ -62,7 +58,7 @@ void traversal(node *head)
 	node * temp = head;
 	while(temp != NULL)
 	{
-		printf("%i, %i, %s\n", temp->seq_no, temp->line_no, temp->content);
+		printf("%i, %i, %s", temp->seq_no, temp->line_no, temp->content);
 		temp = temp->next;
 	}
 
@@ -75,6 +71,13 @@ void insert(node **phead, node *newnode)
 	if(*phead == NULL)
 	{
 		*phead = newnode;
+	}
+	else if ((*phead)->line_no > newnode->line_no) {
+
+		newnode->next = (*phead);
+		
+		(*phead) = newnode;
+
 	}
 	else
 	{
