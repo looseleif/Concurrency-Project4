@@ -1,42 +1,41 @@
 /*test machine: CSELAB_machine_name
-* date: 10/23/21
+* date: 11/21/2021
 * name: Michael Johnson, Chase Anderson, Emir Sahbegovic
 * x500: Joh18255, And08479, Sahbe001
 */
 
 
 Purpose of the Program:
-
-	This program has the purpose of implementing a shell for use of multiple commands. Extra features include the use of output rediections into files,
-	as well as using pipes to take the output of one program and place it as the input to another program. The feature of piping and redirection in the same
-	command is also implemented. This shell will also work to implement system bin commands (e.g. pwd).
-
+	The purpose of our program is to create a program that takes advantage of the 
+	multithreading options available to us to create and traverse through a linked list.
+	Our program will accomplish this by using the pthread commands to create threads
+	that access and insert lines from the input text file and will correctly synchronize
+	the variables to ensure 100% accuracy.
+	
 How to Compile the Program:
 
 	Once one has correctly navigated to the source file, run the command "make" in a linux system,
 	this will utilize gcc to compile and generate an output file.
 
-What Our Program Does:
 
-	Our program will take text input and run the shell commands required of it. Given a command was faulty or a file not provided, the system will provide the
-	output error message "Command Error". Aligned with the given purpose, this program will output to the systems standard output or a given file based on the
-	provided input. Three embeded commands (cd, ls, wc) not including exit work to change your working directory, list the files in the current 
-	working directory, and list input text information respectively.
+What Our Program Does:
+	Our program will take 2 inputs from the user, the text file and the amount of threads
+	that will be used. It will then create the specified amount of threads and will
+	concurrently read the text file line by line. The threads will then input the
+	line number, and the content of the text file into a linked list node structure. 
+	The program also records when the node is created and inserted into the linked list.
+	When the nodes are being inserted into the linked list, the nodes will automatically 
+	sort themselves based on which line the content was on in the text file. Finally,
+	our program will sequentially print the linked list and print it out.
+
+
 
 External Assumptions:
 
-	1. Command input will follow suit of typical linux shell command inputs.
-
-	2. Only a single pipe will be used in command execution.
-
-	3. Command argument count will not exceed 50 entries.
-
-	4. Command arguments themselves will not exceed 100 characters.
-
-	5. As mentioned with TA Wenlong Wang, the character resulting from a printf statement was necessary to prevent a bug
-	   that could not be solved by any groupmate.
-
-	6. Files do not need to be created prior to redirecting output, the shell will automatically handle such requests.
+	1. We assume that the space is counted as an ASCII text and will therefore count as 
+		a standalone line in the linked list.
+	2. We assume traversal to be called only one time. We believe this to be true because 
+		there is only one printout of the linked list contents in the project pdf.
 
 Our Team:
 
@@ -46,6 +45,6 @@ Our Team:
 
 Our Contributions: 
 	
-	Michael - ls.c / redirection / commenting
-	Chase - wc.c / piping / README
-	Emir - cd.c / shell / exit
+	Michael - create_node, README
+	Chase - process file, error checking, comments
+	Emir - read_line, insert, traversal

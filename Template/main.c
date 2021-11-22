@@ -19,19 +19,29 @@ pthread_mutex_t seq_lock = PTHREAD_MUTEX_INITIALIZER;
 void* process_file(void *param)
 {
 
-	char* lineOfInterest;
+	char* lineOfInterest; // to hold line from file
 
-	int local_lc = 0;
+	int local_lc = 0; // used to maintain local manipulation and minimize critical sections
 
 	while (1) {
 
-		pthread_mutex_lock(&line_lock);
+		if (pthread_mutex_lock(&line_lock) != 0) {
 
-		local_lc = line_ctr;
+			perror("process_file");
+			exit(-1);
+
+		}
+
+		local_lc = line_ctr; // locked manipulation of line_ctr
 
 		line_ctr = line_ctr + 1;
 
-		pthread_mutex_unlock(&line_lock);
+		if (pthread_mutex_unlock(&line_lock) != 0) {
+
+			perror("process_file");
+			exit(-1);
+
+		}
 
 		char* filename = (char*)param;
 
@@ -39,19 +49,29 @@ void* process_file(void *param)
 
 		if (lineOfInterest == (char*)5) {
 
-			free(lineOfInterest);
-
 			return 0;
 
 		}
 
-		pthread_mutex_lock(&list_lock);
+		
+		if (pthread_mutex_lock(&list_lock) != 0) {
 
-		node* threadNode = create_node(local_lc, lineOfInterest);
+			perror("process_file");
+			exit(-1);
+
+		}
+
+		node* threadNode = create_node(local_lc, lineOfInterest); // read only access of data
 
 		insert(&head, threadNode);
 
-		pthread_mutex_unlock(&list_lock);
+		
+		if (pthread_mutex_unlock(&list_lock) != 0) {
+
+			perror("process_file");
+			exit(-1);
+
+		}
 
 	}
 
@@ -92,7 +112,7 @@ int main(int argc, char* argv[])
 		pthread_join(threadArray[i], NULL);
 	}
 
-	traversal(head);
+	traversal(head); // only print resultant linked list contents at the end
 
 	if (head != NULL) {
 
